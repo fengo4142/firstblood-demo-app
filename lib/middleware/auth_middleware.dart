@@ -36,9 +36,8 @@ class AuthMiddleware {
     try {
       final Map<String, dynamic> authData =
           await authService.login(action.email, action.password);
-      print('-----------');
-      print(authData);
-      print('-----------------');
+
+      // if response arrived, dispatch login success action with response data (user info & token)
       _persistToken(authData['token']);
       store.dispatch(UserLoginSuccess(
           token: authData['token'],
@@ -47,6 +46,7 @@ class AuthMiddleware {
           lastName: authData['lastName'],
           level: authData['level']));
     } catch (e) {
+      // if error occured, dispatch login failure action with that error 
       store.dispatch(UserLoginFailure(error: e.toString()));
     }
   }
@@ -55,13 +55,15 @@ class AuthMiddleware {
       NextDispatcher next) async {
     next(action);
 
+    // keeping response data in store when login success
     store.dispatch(UserLoaded(
         user: User(
             userName: action.userName,
             fullName: '${action.firstName} ${action.lastName}',
             level: action.level)));
   }
-
+  
+  // get rid of token when logout
   void _logout(
       Store<AppState> store, UserLogout action, NextDispatcher next) async {
     await _deleteToken();
