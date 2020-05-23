@@ -62,7 +62,8 @@ void main() {
     // Use Mockito to return a successful response when it calls the provided http.Client.
     final mockClient = MockClient();
     final path = globals.apiURL;
-    
+
+    // mockup http request with valid email & password, success response    
     when(mockClient.post('$path/login', body: {'email': validEmail, 'password': password}))
           .thenAnswer((_) async => http.Response('{"firstName": "John","lastName": "Appleseed","username": "flurryflutter", "level": "100"}', 200));  
 
