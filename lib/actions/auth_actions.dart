@@ -11,8 +11,13 @@ class UserLoginRequest {
 
 class UserLoginSuccess {
   final String token;
+  final String userName;
+  final String firstName;
+  final String lastName;
+  final String level;
 
-  UserLoginSuccess({this.token});
+  UserLoginSuccess(
+      {this.token, this.userName, this.firstName, this.lastName, this.level});
 }
 
 class UserLoaded {

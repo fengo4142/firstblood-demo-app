@@ -36,9 +36,16 @@ class AuthMiddleware {
     try {
       final Map<String, dynamic> authData =
           await authService.login(action.email, action.password);
+      print('-----------');
       print(authData);
+      print('-----------------');
       _persistToken(authData['token']);
-      store.dispatch(UserLoginSuccess(token: authData['token']));
+      store.dispatch(UserLoginSuccess(
+          token: authData['token'],
+          userName: authData['username'],
+          firstName: authData['firstName'],
+          lastName: authData['lastName'],
+          level: authData['level']));
     } catch (e) {
       store.dispatch(UserLoginFailure(error: e.toString()));
     }
@@ -48,7 +55,11 @@ class AuthMiddleware {
       NextDispatcher next) async {
     next(action);
 
-    store.dispatch(UserLoaded(user: User(token: action.token)));
+    store.dispatch(UserLoaded(
+        user: User(
+            userName: action.userName,
+            fullName: '${action.firstName} ${action.lastName}',
+            level: action.level)));
   }
 
   void _logout(
