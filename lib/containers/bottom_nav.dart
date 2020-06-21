@@ -41,7 +41,9 @@ class BottomNav extends StatelessWidget {
 }
 
 class _ViewModel {
+  // selected nav index
   final int selectedBottomNav;
+  // boolean if bottom nav selected or not
   final Function(int) onBottomNavSelected;
 
   _ViewModel({

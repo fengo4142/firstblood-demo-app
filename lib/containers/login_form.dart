@@ -14,7 +14,7 @@ class LoginForm extends StatefulWidget {
 class LoginFormState extends State<LoginForm> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  Key _formKey;
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -40,6 +40,7 @@ class LoginFormState extends State<LoginForm> {
     return Padding(
       padding: EdgeInsets.fromLTRB(0.0, 100.0, 0.0, 0.0),
       child: TextFormField(
+          key: Key('email'),
           maxLines: 1,
           keyboardType: TextInputType.emailAddress,
           autofocus: false,
@@ -49,8 +50,17 @@ class LoginFormState extends State<LoginForm> {
                 Icons.mail,
                 color: Colors.grey,
               )),
-          validator: (String value) =>
-              value.isEmpty ? 'Email can\'t be empty' : null,
+          validator: (String value) {
+              // email validation with regular expression
+              final pattern = r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
+              final regex = RegExp(pattern);
+              if (value.isEmpty) {
+                return 'Email can\'t be empty!';
+              } else if (!regex.hasMatch(value.trim())) {
+                return 'Email is not valid';
+              }
+              return null;
+          },
           controller: _emailController),
     );
   }
@@ -59,6 +69,7 @@ class LoginFormState extends State<LoginForm> {
     return Padding(
       padding: EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 0.0),
       child: TextFormField(
+        key: Key('password'),
         maxLines: 1,
         obscureText: true,
         autofocus: false,
@@ -68,7 +79,7 @@ class LoginFormState extends State<LoginForm> {
               Icons.lock,
               color: Colors.grey,
             )),
-        validator: (String value) =>
+        validator: (String value) => 
             value.isEmpty ? 'Password can\'t be empty' : null,
         controller: _passwordController,
       ),
@@ -95,7 +106,9 @@ class LoginFormState extends State<LoginForm> {
             child: Text('Login',
                 style: TextStyle(fontSize: 20.0, color: Colors.white)),
             onPressed: () {
-              onLogin(_emailController.text, _passwordController.text);
+              if (_formKey.currentState.validate()) {
+                onLogin(_emailController.text, _passwordController.text);
+              }
             },
           );
         }));
@@ -105,13 +118,13 @@ class LoginFormState extends State<LoginForm> {
     return Padding(
         padding: EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 0.0),
         child: StoreConnector<AppState, OnLoginCallback>(
-            converter: (Store<AppState> store) {
-          return (String email, String password) {
-            store.dispatch(UserLoginRequest(
-              email: email,
-              password: password,
-            ));
-          };
+          converter: (Store<AppState> store) {
+            return (String email, String password) {
+              store.dispatch(UserLoginRequest(
+                email: email,
+                password: password,
+              ));
+            };
         }, builder: (BuildContext context, OnLoginCallback onLogin) {
           return MaterialButton(
             elevation: 5.0,

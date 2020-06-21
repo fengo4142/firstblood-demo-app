@@ -1,21 +1,22 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:core';
+import 'package:flutter_hiring_exercise/globals.dart' as globals;
 
 class AuthService {
-
   const AuthService();
-
   Future<Map<String, dynamic>> login(String email, String password) async {
     
-    // fake service call 
-    await Future.delayed(const Duration(seconds: 2), () {});
+    // service call
+    final path = globals.apiURL;
+    final response = await globals.httpClient.post('$path/login',
+        body: {
+          'email': email, 
+          'password': password
+        });
 
-    // fake login auth token
-    final Map<String, String> authData = {
-      'token': 'example_fake_token'
-    };
+    final Map<String, dynamic> responseJson = json.decode(response.body);
 
-    return authData;
+    return responseJson;
   }
-
 }
